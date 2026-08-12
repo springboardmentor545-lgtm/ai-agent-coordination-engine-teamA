@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pydantic
+python-dotenv
+langchain
+langchain-core
+langchain-groq
+groq
+httpx
+pytest
