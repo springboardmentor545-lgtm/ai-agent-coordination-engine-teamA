@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Healthcare AI Agent</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #eef3f8;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #1769aa;
+            color: white;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 850px;
+            height: 75vh;
+            margin: 30px auto;
+
+            background: white;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 4px 20px rgba(0, 0, 0, 0.12);
+
+            display: flex;
+            flex-direction: column;
+
+            overflow: hidden;
+        }
+
+        .chat-title {
+            padding: 18px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .chat-title h2 {
+            color: #1769aa;
+        }
+
+        .chat-title p {
+            color: #777;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        /* ======================================
+           TOOL BUTTONS
+        ====================================== */
+
+        .tools {
+            display: flex;
+            gap: 10px;
+            padding: 12px;
+
+            justify-content: center;
+
+            flex-wrap: wrap;
+
+            border-bottom: 1px solid #eee;
+        }
+
+        .tool-form {
+            margin: 0;
+        }
+
+        .tool-button {
+            padding: 9px 15px;
+
+            border: none;
+
+            border-radius: 20px;
+
+            background: #eef6ff;
+
+            color: #1769aa;
+
+            cursor: pointer;
+
+            font-size: 13px;
+        }
+
+        .tool-button:hover {
+            background: #1769aa;
+            color: white;
+        }
+
+        /* ======================================
+           MESSAGES
+        ====================================== */
+
+        .messages {
+            flex: 1;
+
+            padding: 20px;
+
+            overflow-y: auto;
+        }
+
+        .message {
+            display: flex;
+
+            margin-bottom: 16px;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.agent {
+            justify-content: flex-start;
+        }
+
+        .bubble {
+            max-width: 75%;
+
+            padding: 13px 16px;
+
+            border-radius: 12px;
+
+            line-height: 1.5;
+
+            white-space: pre-line;
+        }
+
+        .user .bubble {
+            background: #1769aa;
+
+            color: white;
+
+            border-bottom-right-radius: 3px;
+        }
+
+        .agent .bubble {
+            background: #edf1f5;
+
+            color: #222;
+
+            border-bottom-left-radius: 3px;
+        }
+
+        /* ======================================
+           INPUT
+        ====================================== */
+
+        .input-area {
+            padding: 15px;
+
+            border-top: 1px solid #ddd;
+        }
+
+        .chat-form {
+            display: flex;
+
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+
+            padding: 13px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 8px;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: #1769aa;
+        }
+
+        .send-button {
+            padding: 13px 25px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #1769aa;
+
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 15px;
+        }
+
+        .send-button:hover {
+            background: #0d4f82;
+        }
+
+        .footer {
+            text-align: center;
+
+            color: #777;
+
+            font-size: 12px;
+
+            padding-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+
+            .chat-container {
+                width: 95%;
+            }
+
+            .bubble {
+                max-width: 85%;
+            }
+
+            .chat-form {
+                flex-direction: column;
+            }
+
+            .send-button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     HEADER
+========================================= -->
+
+<div class="header">
+
+    <h1>Healthcare AI Agent</h1>
+
+    <p>
+        Milestone 2 - AI Agent with Healthcare Tools
+    </p>
+
+</div>
+
+
+<!-- =========================================
+     CHAT CONTAINER
+========================================= -->
+
+<div class="chat-container">
+
+
+    <div class="chat-title">
+
+        <h2>AI Assistant</h2>
+
+        <p>
+            Ask anything or select a healthcare tool.
+        </p>
+
+    </div>
+
+
+    <!-- =====================================
+         TOOL BUTTONS
+    ====================================== -->
+
+    <div class="tools">
+
+
+        <!-- Symptom Checker -->
+
+        <form method="POST"
+              class="tool-form">
+
+            <input
+                type="hidden"
+                name="tool"
+                value="symptom"
+            >
+
+            <button
+                type="submit"
+                class="tool-button"
+            >
+                Symptom Checker
+            </button>
+
+        </form>
+
+
+        <!-- BMI -->
+
+        <form method="POST"
+              class="tool-form">
+
+            <input
+                type="hidden"
+                name="tool"
+                value="bmi"
+            >
+
+            <button
+                type="submit"
+                class="tool-button"
+            >
+                BMI Calculator
+            </button>
+
+        </form>
+
+
+        <!-- Appointment -->
+
+        <form method="POST"
+              class="tool-form">
+
+            <input
+                type="hidden"
+                name="tool"
+                value="appointment"
+            >
+
+            <button
+                type="submit"
+                class="tool-button"
+            >
+                Appointment Booking
+            </button>
+
+        </form>
+
+
+    </div>
+
+
+    <!-- =====================================
+         MESSAGES
+    ====================================== -->
+
+    <div class="messages">
+
+        {% for message in messages %}
+
+            <div class="message {{ message.sender }}">
+
+                <div class="bubble">
+
+                    {{ message.text }}
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- =====================================
+         CHAT INPUT
+    ====================================== -->
+
+    <div class="input-area">
+
+        <form
+            method="POST"
+            class="chat-form"
+        >
+
+            <input
+                type="text"
+                name="message"
+                class="chat-input"
+                placeholder="Ask anything..."
+                autocomplete="off"
+                required
+            >
+
+            <button
+                type="submit"
+                class="send-button"
+            >
+                Send
+            </button>
+
+        </form>
+
+    </div>
+
+
+</div>
+
+
+<div class="footer">
+
+    Healthcare AI Agent - Milestone 2
+
+</div>
+
+
+<script>
+
+    const messages =
+        document.querySelector(".messages");
+
+    messages.scrollTop =
+        messages.scrollHeight;
+
+</script>
+
+
+</body>
+
+</html>
