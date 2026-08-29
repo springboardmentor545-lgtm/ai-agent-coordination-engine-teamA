@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+  body {
+    @apply antialiased text-on-surface font-body-md;
+  }
+}
+
+@layer utilities {
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .soft-gradient-bg {
+    background: linear-gradient(135deg, #f7f9fb 0%, #e6e8ea 100%);
+  }
+  .level-1-shadow {
+    box-shadow: 0px 4px 20px rgba(0, 94, 184, 0.04);
+  }
+}
