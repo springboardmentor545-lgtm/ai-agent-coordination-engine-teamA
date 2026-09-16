@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Bot, MoreVertical, Paperclip, Send, X, Mic, MicOff, Volume2, VolumeX, MessageSquare, Plus, Menu, Trash2 } from 'lucide-react';
+import os
+
+tsx_content = """import React, { useState, useEffect } from 'react';
+import { Bot, MoreVertical, Paperclip, Send, X, Mic, MicOff, Volume2, VolumeX, MessageSquare, Plus, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
@@ -30,8 +32,7 @@ export default function SymptomChecker() {
   // Chat Sessions States
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
-  const [sessionToDelete, setSessionToDelete] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   // Voice Assistant States
   const [isListening, setIsListening] = useState(false);
@@ -101,11 +102,7 @@ export default function SymptomChecker() {
   const initialMessage = {
     id: '1',
     sender: 'ai' as const,
-<<<<<<< HEAD
-    text: "Hello. I am the VitalGate AI Health Assistant. I'm here to help you assess your symptoms. Please note that I am an AI and this is not a substitute for professional medical advice in an emergency.\n\nTo get started, could you briefly describe what's bothering you today?"
-=======
-    text: "Hello. I am the CareTaker AI Health Assistant. I'm here to help you assess your symptoms. Please note that I am an AI and this is not a substitute for professional medical advice in an emergency.\n\nTo get started, could you briefly describe what's bothering you today?"
->>>>>>> team/main
+    text: "Hello. I am the CareTaker AI Health Assistant. I'm here to help you assess your symptoms. Please note that I am an AI and this is not a substitute for professional medical advice in an emergency.\\n\\nTo get started, could you briefly describe what's bothering you today?"
   };
 
   const [messages, setMessages] = useState<Message[]>([initialMessage]);
@@ -148,25 +145,6 @@ export default function SymptomChecker() {
     } catch (e) {
       console.error("Failed to load session messages", e);
     }
-  };
-
-  const handleDeleteSession = async () => {
-    if (!sessionToDelete) return;
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-    try {
-      const res = await fetch(`${apiUrl}/api/v1/sessions/${sessionToDelete}`, {
-        method: 'DELETE'
-      });
-      if (res.ok) {
-        setSessions(prev => prev.filter(s => s.id !== sessionToDelete));
-        if (currentSessionId === sessionToDelete) {
-          startNewChat();
-        }
-      }
-    } catch (e) {
-      console.error("Failed to delete session", e);
-    }
-    setSessionToDelete(null);
   };
 
   const startNewChat = () => {
@@ -261,13 +239,7 @@ export default function SymptomChecker() {
     setIsTriaging(true);
     
     // Combine all messages as the context for the triage agent
-<<<<<<< HEAD
-    // Take only the last 10 messages to prevent hitting AI context limits
-    const recentMessages = messages.slice(-10);
-    const allMessages = recentMessages.map(m => `${m.sender.toUpperCase()}: ${m.text}`).join('\n\n');
-=======
-    const allMessages = messages.map(m => `${m.sender.toUpperCase()}: ${m.text}`).join('\n\n');
->>>>>>> team/main
+    const allMessages = messages.map(m => `${m.sender.toUpperCase()}: ${m.text}`).join('\\n\\n');
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -281,37 +253,18 @@ export default function SymptomChecker() {
         })
       });
 
-<<<<<<< HEAD
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.detail || `Server error: ${response.status}`);
-      }
-=======
       if (!response.ok) throw new Error('Network error');
->>>>>>> team/main
 
       const data = await response.json();
       setTimeout(() => navigate('/result', { state: { triageData: data } }), 3000);
 
-<<<<<<< HEAD
-    } catch (error: any) {
-      let errorMessage = "The AI service is currently busy (Rate Limit). Please wait 60 seconds and try again.";
-      if (error.message) {
-         errorMessage = `System Error: ${error.message}. Please wait and try again.`;
-      }
-=======
     } catch (error) {
->>>>>>> team/main
       setTimeout(() => navigate('/result', { 
         state: { 
           triageData: {
             urgency_level: "Medium",
             recommended_department: "General Practice",
-<<<<<<< HEAD
-            ai_explanation: errorMessage
-=======
             ai_explanation: "This is a fallback demo explanation because the backend API is currently offline."
->>>>>>> team/main
           } 
         } 
       }), 3000);
@@ -332,20 +285,13 @@ export default function SymptomChecker() {
   };
 
   return (
-    <div className="flex-grow flex w-full relative h-full overflow-hidden bg-slate-50">
+    <div className="flex-grow flex w-full relative h-[calc(100vh-73px)] overflow-hidden bg-slate-50">
       
       {/* Sidebar for Chat Sessions */}
-<<<<<<< HEAD
-      <div className={`absolute md:static top-0 left-0 h-full bg-white text-slate-700 border-r border-slate-200 flex flex-col transition-all duration-300 z-50 ${isSidebarOpen ? 'w-64 translate-x-0' : 'w-0 -translate-x-full'} flex-shrink-0 overflow-hidden`}>
-        <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-          <h2 className="font-semibold text-slate-900 whitespace-nowrap">Chat History</h2>
-          <button onClick={() => setIsSidebarOpen(false)} className="text-slate-400 hover:text-slate-700 p-1" title="Close Sidebar">
-=======
-      <div className={`absolute md:static top-0 left-0 h-full bg-slate-900 text-slate-300 flex flex-col transition-all duration-300 z-50 ${isSidebarOpen ? 'w-64 translate-x-0' : 'w-0 -translate-x-full'} flex-shrink-0 overflow-hidden`}>
+      <div className={`absolute md:static top-0 left-0 h-full bg-slate-900 text-slate-300 w-64 flex flex-col transition-transform duration-300 z-50 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} flex-shrink-0`}>
         <div className="p-4 border-b border-slate-700 flex items-center justify-between">
-          <h2 className="font-semibold text-white whitespace-nowrap">Chat History</h2>
-          <button onClick={() => setIsSidebarOpen(false)} className="text-slate-400 hover:text-white p-1" title="Close Sidebar">
->>>>>>> team/main
+          <h2 className="font-semibold text-white">Chat History</h2>
+          <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-slate-400 hover:text-white p-1">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -353,50 +299,23 @@ export default function SymptomChecker() {
         <div className="p-3">
           <button 
             onClick={startNewChat}
-<<<<<<< HEAD
-            className="w-full flex items-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors border border-blue-200"
-          >
-            <Plus className="w-4 h-4" />
-            <span className="text-sm font-semibold">New Chat</span>
-=======
             className="w-full flex items-center gap-2 p-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors border border-slate-700"
           >
             <Plus className="w-4 h-4" />
             <span className="text-sm font-medium">New Chat</span>
->>>>>>> team/main
           </button>
         </div>
         
         <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-1 custom-scrollbar">
           {sessions.map((session) => (
-            <div 
+            <button 
               key={session.id}
               onClick={() => loadSession(session.id)}
-<<<<<<< HEAD
-              className={`flex items-center justify-between group p-2.5 rounded-lg text-sm cursor-pointer transition-colors ${currentSessionId === session.id ? 'bg-blue-50 text-blue-700 font-medium' : 'hover:bg-slate-100 text-slate-700 hover:text-slate-900'}`}
-=======
-              className={`flex items-center justify-between group p-2.5 rounded-lg text-sm cursor-pointer transition-colors ${currentSessionId === session.id ? 'bg-blue-600/20 text-blue-400' : 'hover:bg-slate-800 text-slate-300 hover:text-slate-100'}`}
->>>>>>> team/main
+              className={`flex items-center gap-2.5 p-2.5 rounded-lg text-sm text-left transition-colors ${currentSessionId === session.id ? 'bg-blue-600/20 text-blue-400' : 'hover:bg-slate-800 text-slate-300 hover:text-slate-100'}`}
             >
-              <div className="flex items-center gap-2.5 overflow-hidden flex-1">
-                <MessageSquare className="w-4 h-4 flex-shrink-0" />
-                <span className="truncate">{session.title}</span>
-              </div>
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSessionToDelete(session.id);
-                }}
-<<<<<<< HEAD
-                className={`p-1.5 ml-2 rounded hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 ${currentSessionId === session.id ? 'opacity-100' : ''}`}
-=======
-                className={`p-1.5 ml-2 rounded hover:bg-slate-700/80 text-slate-400 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 ${currentSessionId === session.id ? 'opacity-100' : ''}`}
->>>>>>> team/main
-                title="Delete Chat"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
+              <MessageSquare className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate">{session.title}</span>
+            </button>
           ))}
           {sessions.length === 0 && (
             <div className="text-sm text-slate-500 p-4 text-center">
@@ -419,15 +338,12 @@ export default function SymptomChecker() {
         {/* Chat Header with Progress Strip */}
         <div className="bg-white rounded-t-2xl p-4 flex flex-col gap-4 shadow-sm border border-slate-200 border-b-slate-100 z-10">
           <div className="flex items-center gap-3">
-            {!isSidebarOpen && (
-              <button 
-                onClick={() => setIsSidebarOpen(true)}
-                className="text-slate-500 hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-slate-50 border border-slate-200 bg-white"
-                title="Open Chat History"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-            )}
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="md:hidden text-slate-500 hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-slate-50 border border-slate-200 bg-white"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
             <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
               <Bot className="w-6 h-6" />
             </div>
@@ -593,30 +509,10 @@ export default function SymptomChecker() {
           </div>
         </div>
       </div>
-
-      {/* Delete Confirmation Modal */}
-      {sessionToDelete && (
-        <div className="fixed inset-0 bg-slate-900/50 z-[100] flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-[90%] max-w-[380px] p-6 flex flex-col gap-4">
-            <h3 className="text-lg font-bold text-slate-900">Delete Chat</h3>
-            <p className="text-slate-600 text-sm">Are you sure you want to delete this chat history? This action cannot be undone.</p>
-            <div className="flex items-center justify-end gap-3 mt-2">
-              <button 
-                onClick={() => setSessionToDelete(null)}
-                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleDeleteSession}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-sm"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
+"""
+
+with open("e:/healthagent/frontend/src/pages/SymptomChecker.tsx", "w", encoding="utf-8") as f:
+    f.write(tsx_content)

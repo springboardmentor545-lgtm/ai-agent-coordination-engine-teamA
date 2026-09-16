@@ -54,7 +54,11 @@ export default function Sidebar({ isOpen = false, setIsOpen = (_v: boolean) => {
         <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100">
           <Link to={role === 'admin' ? '/admin' : role === 'doctor' ? '/doctor' : '/dashboard'} className="flex items-center gap-2 text-xl font-bold text-blue-600" onClick={() => setIsOpen(false)}>
             <ShieldCheck className="w-7 h-7 text-emerald-500" />
+<<<<<<< HEAD
+            VitalGate AI
+=======
             CareTaker AI
+>>>>>>> team/main
           </Link>
           <button className="md:hidden p-1 text-slate-400 hover:text-slate-600 rounded-lg" onClick={() => setIsOpen(false)}>
             <X className="w-5 h-5" />
@@ -88,6 +92,16 @@ export default function Sidebar({ isOpen = false, setIsOpen = (_v: boolean) => {
               <UserPlus className={`w-5 h-5 ${location.pathname === '/admin/create-doctor' ? 'text-blue-600' : 'text-slate-400'}`} />
               Create Doctor ID
             </Link>
+<<<<<<< HEAD
+            <Link 
+              to="/admin/users" 
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${location.pathname === '/admin/users' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+            >
+              <UserCircle className={`w-5 h-5 ${location.pathname === '/admin/users' ? 'text-blue-600' : 'text-slate-400'}`} />
+              User Directory
+            </Link>
+=======
+>>>>>>> team/main
           </>
         ) : role === 'doctor' ? (
           <>
@@ -96,7 +110,11 @@ export default function Sidebar({ isOpen = false, setIsOpen = (_v: boolean) => {
               className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${location.pathname === '/doctor' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
             >
               <Stethoscope className={`w-5 h-5 ${location.pathname === '/doctor' ? 'text-blue-600' : 'text-slate-400'}`} />
+<<<<<<< HEAD
+              Active Triage
+=======
               Patient Queue
+>>>>>>> team/main
             </Link>
             <Link 
               to="/doctor/schedule" 

@@ -18,7 +18,11 @@ def analysis_node(state: AgentState) -> dict:
     try:
         # Initialize LLM
         from langchain_groq import ChatGroq
+<<<<<<< HEAD
+        llm = ChatGroq(api_key=settings.GROQ_API_KEY, model_name="openai/gpt-oss-120b", temperature=0.2)
+=======
         llm = ChatGroq(api_key=settings.GROQ_API_KEY, model_name="qwen/qwen3.6-27b", temperature=0.2)
+>>>>>>> team/main
         
         # Define Prompt
         prompt = ChatPromptTemplate.from_messages([

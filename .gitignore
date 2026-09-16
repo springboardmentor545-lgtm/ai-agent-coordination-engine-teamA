@@ -16,6 +16,13 @@ node_modules/
 dist/
 build/
 
+<<<<<<< HEAD
+# OS / Office temporary files
+.DS_Store
+Thumbs.db
+~$*
+=======
 # OS files
 .DS_Store
 Thumbs.db
+>>>>>>> team/main
