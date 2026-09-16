@@ -17,7 +17,12 @@ def intake_node(state: AgentState) -> dict:
     latest_message = messages[-1].content if messages else ""
     
     # Initialize LLM
+<<<<<<< HEAD
+    from langchain_groq import ChatGroq
+    llm = ChatGroq(api_key=settings.GROQ_API_KEY, model_name="openai/gpt-oss-120b")
+=======
     llm = ChatGroq(api_key=settings.GROQ_API_KEY, model_name="qwen/qwen3.6-27b")
+>>>>>>> team/main
     
     # Define structured output
     structured_llm = llm.with_structured_output(IntakeSchema)

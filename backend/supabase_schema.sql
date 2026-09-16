@@ -49,6 +49,11 @@ alter table public.appointments enable row level security;
 
 -- Create basic policies (In production, these should be stricter)
 create policy "Users can view their own profile." on public.users for select using (auth.uid() = id);
+<<<<<<< HEAD
+create policy "Users can insert their own profile." on public.users for insert with check (auth.uid() = id);
+create policy "Users can update their own profile." on public.users for update using (auth.uid() = id);
+=======
+>>>>>>> team/main
 create policy "Users can view their own reports." on public.triage_reports for select using (auth.uid() = patient_id);
 create policy "Doctors can view all reports." on public.triage_reports for select using (
   exists (select 1 from public.users where id = auth.uid() and role = 'doctor')

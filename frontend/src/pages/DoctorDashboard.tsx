@@ -23,7 +23,12 @@ export default function DoctorDashboard() {
   const [loading, setLoading] = useState(true);
   const [loadingAppts, setLoadingAppts] = useState(true);
   const [doctorId, setDoctorId] = useState<string | null>(null);
+<<<<<<< HEAD
+  const [filterUrgency, setFilterUrgency] = useState<string>('All');
+  const [filterDept, setFilterDept] = useState<string>('All');
+=======
 
+>>>>>>> team/main
   useEffect(() => {
     async function fetchQueue() {
       const { data: userData } = await supabase.auth.getUser();
@@ -66,7 +71,11 @@ export default function DoctorDashboard() {
     setLoadingAppts(true);
     const { data, error } = await supabase
       .from('appointments')
+<<<<<<< HEAD
+      .select('*, users!appointments_patient_id_fkey(full_name), triages!appointments_triage_report_id_fkey(symptoms, urgency, department, analysis)')
+=======
       .select('*, users!appointments_patient_id_fkey(full_name)')
+>>>>>>> team/main
       .eq('doctor_id', docId)
       .eq('status', 'scheduled')
       .order('created_at', { ascending: false });
@@ -79,9 +88,47 @@ export default function DoctorDashboard() {
         .eq('doctor_id', docId)
         .eq('status', 'scheduled')
         .order('created_at', { ascending: false });
+<<<<<<< HEAD
+      if (fallbackData) {
+        const formatted = fallbackData.map((item: any) => ({
+          id: item.id,
+          patient_id: item.patient_id,
+          name: item.users?.full_name || 'Unknown Patient',
+          urgency: item.triage_reports?.urgency_level || 'Unknown',
+          dept: item.department,
+          time: item.appointment_time,
+          isAppt: true,
+          report: {
+            symptoms: ['Not specified'],
+            duration: 'Not specified',
+            analysis: 'No analysis available',
+            image_data: null
+          }
+        }));
+        setAppointments(formatted);
+      }
+    } else if (data) {
+      const formatted = data.map((item: any) => ({
+        id: item.id,
+        patient_id: item.patient_id,
+        name: item.users?.full_name || 'Unknown Patient',
+        urgency: item.triages?.urgency || 'Unknown',
+        dept: item.department,
+        time: item.appointment_time,
+        isAppt: true,
+        report: {
+          symptoms: item.triages?.symptoms ? item.triages.symptoms.split(',') : ['Not specified'],
+          duration: 'Not specified',
+          analysis: item.triages?.analysis || 'No analysis available',
+          image_data: null
+        }
+      }));
+      setAppointments(formatted);
+=======
       if (fallbackData) setAppointments(fallbackData);
     } else if (data) {
       setAppointments(data);
+>>>>>>> team/main
     }
     setLoadingAppts(false);
   };
@@ -165,10 +212,27 @@ export default function DoctorDashboard() {
   const lockedAppts = appointments.filter(a => a.patient_id === doctorId);
   const patientAppts = appointments.filter(a => a.patient_id !== doctorId);
 
+<<<<<<< HEAD
+  // Derived state for filtering
+  const filteredPatients = patients.filter(p => {
+    const matchUrgency = filterUrgency === 'All' || p.urgency?.toLowerCase() === filterUrgency.toLowerCase();
+    const matchDept = filterDept === 'All' || p.dept?.toLowerCase() === filterDept.toLowerCase();
+    return matchUrgency && matchDept;
+  });
+
+  const paginatedPatients = filteredPatients.slice((queuePage - 1) * ITEMS_PER_PAGE, queuePage * ITEMS_PER_PAGE);
+  const paginatedAppts = patientAppts.slice((schedulePage - 1) * ITEMS_PER_PAGE, schedulePage * ITEMS_PER_PAGE);
+  const totalQueuePages = Math.ceil(filteredPatients.length / ITEMS_PER_PAGE) || 1;
+  const totalSchedulePages = Math.ceil(patientAppts.length / ITEMS_PER_PAGE) || 1;
+  
+  // Extract unique departments for dropdown
+  const uniqueDepts = Array.from(new Set(patients.map(p => p.dept).filter(Boolean)));
+=======
   const paginatedPatients = patients.slice((queuePage - 1) * ITEMS_PER_PAGE, queuePage * ITEMS_PER_PAGE);
   const paginatedAppts = patientAppts.slice((schedulePage - 1) * ITEMS_PER_PAGE, schedulePage * ITEMS_PER_PAGE);
   const totalQueuePages = Math.ceil(patients.length / ITEMS_PER_PAGE) || 1;
   const totalSchedulePages = Math.ceil(patientAppts.length / ITEMS_PER_PAGE) || 1;
+>>>>>>> team/main
 
   const downloadPDF = (patient: any) => {
     const doc = new jsPDF();
@@ -201,6 +265,185 @@ export default function DoctorDashboard() {
     XLSX.writeFile(workbook, `Report_${patient.name.replace(/\s+/g, '_')}.xlsx`);
   };
 
+<<<<<<< HEAD
+
+  const renderPatientList = (list: any[], isAppt: boolean = false) => {
+    return list.map((patient) => {
+      const isExpanded = expandedId === patient.id;
+      
+      return (
+        <div key={patient.id} className="flex flex-col">
+          {/* Main Row */}
+          <div 
+            onClick={() => setExpandedId(isExpanded ? null : patient.id)}
+            className={`grid grid-cols-12 gap-4 p-4 items-center cursor-pointer transition-colors ${isExpanded ? 'bg-blue-50/50' : 'hover:bg-slate-50'}`}
+          >
+            <div className="col-span-4 md:col-span-3 pl-2 font-bold text-slate-900 truncate">
+              {patient.name}
+            </div>
+            
+            <div className="col-span-3 md:col-span-2 flex justify-center">
+              <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold ${getUrgencyStyles(patient.urgency)}`}>
+                <ShieldCheck className="w-3.5 h-3.5" />
+                {patient.urgency}
+              </div>
+            </div>
+
+            <div className="hidden md:block md:col-span-4 text-sm font-medium text-slate-600 truncate">
+              {patient.dept}
+            </div>
+            
+            <div className="col-span-4 md:col-span-2 text-right text-sm text-slate-500 font-medium truncate">
+              {patient.time}
+            </div>
+
+            <div className="col-span-1 flex justify-center text-slate-400">
+              {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            </div>
+          </div>
+
+          {/* Expanded Report View */}
+          {isExpanded && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-slate-50 border-t border-slate-100">
+              
+              {/* Left: Symptoms & Duration */}
+              <div className="md:col-span-1 space-y-6">
+                {patient.report.image_data && (
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Scan Report</h4>
+                    <div className="w-full rounded-xl overflow-hidden border border-slate-200">
+                      <img src={`data:image/jpeg;base64,${patient.report.image_data}`} alt="Medical Scan" className="w-full h-auto object-cover" />
+                    </div>
+                  </div>
+                )}
+                <div>
+                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Reported Symptoms</h4>
+                  <ul className="space-y-2">
+                    {patient.report.symptoms.map((sym: string, i: number) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0"></div>
+                        {sym}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Duration</h4>
+                  <p className="text-sm font-medium text-slate-800">{patient.report.duration}</p>
+                </div>
+              </div>
+
+              {/* Middle: AI Analysis */}
+              <div className="md:col-span-2">
+                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  AI Analysis Summary
+                </h4>
+                <div className="bg-white p-4 rounded-xl border border-slate-200 text-sm text-slate-700 leading-relaxed shadow-sm mb-6">
+                  {patient.report.analysis}
+                </div>
+
+                {/* Action Buttons */}
+                {!isAppt && (
+                  <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                    <button 
+                      onClick={() => setShowScribe(showScribe === patient.id ? null : patient.id)}
+                      className={`flex-1 py-2.5 font-medium transition-colors flex items-center justify-center gap-2 shadow-sm rounded-lg border ${showScribe === patient.id ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white hover:bg-indigo-50 text-indigo-600 border-indigo-200'}`}
+                    >
+                      <Bot className="w-4 h-4" />
+                      AI Scribe Notes
+                    </button>
+                    <button 
+                      onClick={() => handleAcknowledge(patient.id)}
+                      className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 shadow-sm"
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                      Acknowledge
+                    </button>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setArchiveId(patient.id); }}
+                      className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 shadow-sm border border-slate-200"
+                      title="Archive Record"
+                    >
+                      <Archive className="w-4 h-4" />
+                      Archive
+                    </button>
+                    <div className="flex gap-2 flex-1">
+                      <button onClick={() => downloadPDF(patient)} className="flex-1 py-2.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-lg transition-colors flex items-center justify-center shadow-sm">
+                        <FileText className="w-4 h-4 text-red-500" />
+                      </button>
+                      <button onClick={() => downloadExcel(patient)} className="flex-1 py-2.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-lg transition-colors flex items-center justify-center shadow-sm">
+                        <FileSpreadsheet className="w-4 h-4 text-emerald-500" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* AI Scribe Panel */}
+                {showScribe === patient.id && (
+                  <div className="mt-4 p-5 bg-indigo-50/50 border border-indigo-100 rounded-xl relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                    <h4 className="text-sm font-bold text-indigo-900 flex items-center gap-2 mb-3">
+                      <Bot className="w-4 h-4 text-indigo-600" /> Auto-Generated Clinical SOAP Note
+                    </h4>
+                    <div className="space-y-3 text-sm text-slate-700 font-mono">
+                      <p><strong className="text-indigo-700">S (Subjective):</strong> Patient reports symptoms of {patient.report.analysis?.split('.')[0] || 'discomfort'} starting recently. High priority flags triggered via Triage AI.</p>
+                      <p><strong className="text-indigo-700">O (Objective):</strong> Triage AI assigned Urgency Level: {patient.report.urgency_level}. Advised immediate consult in {patient.report.recommended_department}.</p>
+                      <p><strong className="text-indigo-700">A (Assessment):</strong> Preliminary indication requires physical exam to rule out critical complications based on AI flags.</p>
+                      <p><strong className="text-indigo-700">P (Plan):</strong> Acknowledge patient. Proceed with full diagnostic workup in {patient.report.recommended_department}.</p>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-indigo-100 flex justify-end">
+                      <button className="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
+                        Save to EMR Database
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+              </div>
+
+            </div>
+          )}
+        </div>
+      );
+    });
+  };
+
+  return (
+    <div className="flex-grow w-full bg-slate-50 p-6 md:p-10">
+      <div className="w-full h-full">
+        
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+          <h1 className="text-2xl font-bold text-slate-900">
+            {activeTab === 'queue' ? 'Active Triage' : 'My Schedule'}
+          </h1>
+          
+          {activeTab === 'queue' && (
+            <div className="flex flex-col sm:flex-row gap-3">
+              <select 
+                value={filterUrgency}
+                onChange={(e) => { setFilterUrgency(e.target.value); setQueuePage(1); }}
+                className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 outline-none focus:border-blue-500 shadow-sm"
+              >
+                <option value="All">All Urgencies</option>
+                <option value="Critical">Critical</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+
+              <select 
+                value={filterDept}
+                onChange={(e) => { setFilterDept(e.target.value); setQueuePage(1); }}
+                className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 outline-none focus:border-blue-500 shadow-sm"
+              >
+                <option value="All">All Departments</option>
+                {uniqueDepts.map(dept => (
+                  <option key={String(dept)} value={String(dept)}>{String(dept)}</option>
+                ))}
+              </select>
+            </div>
+          )}
+=======
   return (
     <div className="flex-grow w-full bg-slate-50 p-6 md:p-10">
       <div className="max-w-5xl mx-auto">
@@ -209,6 +452,7 @@ export default function DoctorDashboard() {
           <h1 className="text-2xl font-bold text-slate-900">
             {activeTab === 'queue' ? 'Patient Queue' : 'My Schedule'}
           </h1>
+>>>>>>> team/main
         </div>
 
         {activeTab === 'queue' ? (
@@ -225,13 +469,21 @@ export default function DoctorDashboard() {
           {/* Table Rows */}
           <div className="divide-y divide-slate-100">
             {loading ? (
+<<<<<<< HEAD
+              <div className="p-6 text-center text-slate-500">Loading active triage...</div>
+=======
               <div className="p-6 text-center text-slate-500">Loading patient queue...</div>
+>>>>>>> team/main
             ) : patients.length === 0 ? (
               <div className="p-10 text-center">
                 <ShieldCheck className="w-10 h-10 text-slate-300 mx-auto mb-3" />
                 <p className="text-slate-500 font-medium">No pending triages at the moment.</p>
               </div>
             ) : (
+<<<<<<< HEAD
+              renderPatientList(paginatedPatients, false)
+           )}
+=======
               paginatedPatients.map((patient) => {
                 const isExpanded = expandedId === patient.id;
                 
@@ -369,6 +621,7 @@ export default function DoctorDashboard() {
                 );
               })
             )}
+>>>>>>> team/main
           </div>
           {/* Pagination Controls */}
           {patients.length > ITEMS_PER_PAGE && (
@@ -404,6 +657,19 @@ export default function DoctorDashboard() {
                 <p className="text-slate-500 font-medium">No appointments booked yet.</p>
               </div>
             ) : (
+<<<<<<< HEAD
+              <div className="w-full">
+                <div className="grid grid-cols-12 gap-4 p-4 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  <div className="col-span-4 md:col-span-3 pl-2">Patient Name</div>
+                  <div className="col-span-3 md:col-span-2 text-center">Urgency</div>
+                  <div className="hidden md:block md:col-span-4">Recommended Dept</div>
+                  <div className="col-span-4 md:col-span-2 text-right">Date & Time</div>
+                  <div className="col-span-1 text-center"></div>
+                </div>
+                <div className="divide-y divide-slate-100">
+                  {renderPatientList(paginatedAppts, true)}
+                </div>
+=======
               <div className="grid gap-4 md:grid-cols-2">
                 {paginatedAppts.map(appt => (
                   <div key={appt.id} className="p-4 border border-slate-200 rounded-xl bg-slate-50 flex items-start justify-between">
@@ -417,6 +683,7 @@ export default function DoctorDashboard() {
                     </div>
                   </div>
                 ))}
+>>>>>>> team/main
               </div>
             )}
             
@@ -474,7 +741,11 @@ export default function DoctorDashboard() {
                   {lockedAppts.map(appt => (
                     <div key={appt.id} className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-lg">
                       <span className="text-sm font-medium text-amber-800 flex items-center gap-2">
+<<<<<<< HEAD
+                        <Calendar className="w-4 h-4" /> {appt.time}
+=======
                         <Calendar className="w-4 h-4" /> {appt.appointment_time}
+>>>>>>> team/main
                       </span>
                       <button onClick={() => handleUnlockSlot(appt.id)} className="text-xs font-bold text-amber-600 hover:text-amber-800 flex items-center gap-1">
                         <Unlock className="w-3 h-3" /> Unlock

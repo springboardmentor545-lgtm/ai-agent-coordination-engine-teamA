@@ -182,7 +182,11 @@ export default function TriageResult() {
             </div>
           </div>
         ) : (
+<<<<<<< HEAD
+          <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4">
+=======
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+>>>>>>> team/main
             <button
               onClick={handleStartBooking}
               className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2"
@@ -192,6 +196,16 @@ export default function TriageResult() {
             </button>
 
             <button
+<<<<<<< HEAD
+              onClick={() => navigate('/chat')}
+              className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl font-semibold transition-all"
+            >
+              Back to Chat
+            </button>
+
+            <button
+=======
+>>>>>>> team/main
               onClick={() => navigate('/dashboard')}
               className="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl font-semibold transition-all"
             >
